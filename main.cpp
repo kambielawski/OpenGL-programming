@@ -189,7 +189,7 @@ int main( void )
 
     // animate
     theta += 0.01;
-    Model2 = glm::rotate_slow(Model, theta, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::rotate_slow(Model, theta, glm::vec3(1.0f, 0.0f, 0.0f)) * glm::rotate_slow(Model, theta, glm::vec3(0.0f, 0.0f, 1.0f));
+    Model2 = glm::rotate(Model, theta, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(Model, theta, glm::vec3(1.0f, 0.0f, 0.0f)) * glm::rotate(Model, theta, glm::vec3(0.0f, 0.0f, 1.0f));
     MVP = Projection * View * Model2;
 
 		// Send our transformation to the currently bound shader, 
