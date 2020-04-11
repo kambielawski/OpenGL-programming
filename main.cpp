@@ -7,6 +7,7 @@
 using namespace glm;
 
 #include "common/loadShaders.cpp"
+#include "common/controls/controls.cpp"
 
 int main( void )
 {
@@ -65,23 +66,6 @@ int main( void )
 
 	// Get a handle for our "MVP" uniform
 	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
-
-	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-	glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
-	// Or, for an ortho camera :
-	//glm::mat4 Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
-	
-	// Camera matrix
-	glm::mat4 View  = glm::lookAt(
-								glm::vec3(0,0,8), // Camera is at (4,3,3), in World Space
-								glm::vec3(0,0,0), // and looks at the origin
-								glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
-						   );
-	// Model matrix : an identity matrix (model will be at the origin)
-	glm::mat4 Model      = glm::mat4(1.0f);
-  glm::mat4 Model2 = glm::translate(Model, glm::vec3(2.0f, 2.0f, 0.0f));
-	// Our ModelViewProjection : multiplication of our 3 matrices
-	glm::mat4 MVP        = Projection * View * Model2; // Remember, matrix multiplication is the other way around
 
 	static const GLfloat cube_vertex_buffer_data[] = {
     -1.0f,-1.0f,-1.0f, // triangle 1 : begin
@@ -189,8 +173,13 @@ int main( void )
 
     // animate
     theta += 0.01;
-    Model2 = glm::rotate(Model, theta, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(Model, theta, glm::vec3(1.0f, 0.0f, 0.0f)) * glm::rotate(Model, theta, glm::vec3(0.0f, 0.0f, 1.0f));
-    MVP = Projection * View * Model2;
+
+		computeMatricesFromInputs(window);
+		glm::mat4 Model      = glm::mat4(1.0f);
+		glm::mat4 Projection = getProjectionMatrix();
+		glm::mat4 View  = getViewMatrix();
+    // glm::mat4 Model2 = glm::rotate(Model, theta, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(Model, theta, glm::vec3(1.0f, 0.0f, 0.0f)) * glm::rotate(Model, theta, glm::vec3(0.0f, 0.0f, 1.0f));
+    glm::mat4 MVP =  Projection * View * Model;
 
 		// Send our transformation to the currently bound shader, 
 		// in the "MVP" uniform
@@ -211,14 +200,7 @@ int main( void )
 		// 2nd attribute buffer : colors
 		glEnableVertexAttribArray(1);
 		glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
-		glVertexAttribPointer(
-			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
-			3,                                // size
-			GL_FLOAT,                         // type
-			GL_FALSE,                         // normalized?
-			0,                                // stride
-			(void*)0                          // array buffer offset
-		);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 		// Draw the triangle !
 		glDrawArrays(GL_TRIANGLES, 0, 12*3); // 3 indices starting at 0 -> 1 triangle
