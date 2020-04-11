@@ -55,6 +55,8 @@ int main( void )
 
 	// Dark blue background
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+	// don't render backs of surfaces
+	glEnable(GL_CULL_FACE);
 
   // Vertex Array Object (VAO)
 	GLuint VertexArrayID;
