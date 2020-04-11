@@ -1,5 +1,6 @@
 # OpenGL-programming
 playing around with OpenGL graphics
+
 knowledge/some code from http://www.opengl-tutorial.org/beginners-tutorials
 
 # commits
